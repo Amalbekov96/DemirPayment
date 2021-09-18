@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.MappedSuperclass;
 
 @MappedSuperclass
-public abstract class BaseController<E extends BaseEntity, D extends BaseDto, S extends BaseService<E, D>> {
+public abstract class BaseController<E extends BaseEntity, D extends BaseDto, S extends BaseService<D>> {
 
     private final S service;
 

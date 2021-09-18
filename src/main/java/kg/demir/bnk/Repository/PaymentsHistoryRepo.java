@@ -4,5 +4,5 @@ import kg.demir.bnk.Models.PaymentsHistory;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface PaymentsHistoryRepo extends BaseRepository<PaymentsHistory>{
+public interface PaymentsHistoryRepo extends BaseRepo<PaymentsHistory>{
 }

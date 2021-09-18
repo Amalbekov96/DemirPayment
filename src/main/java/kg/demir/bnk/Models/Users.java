@@ -2,8 +2,7 @@ package kg.demir.bnk.Models;
 
 import lombok.Data;
 
-import javax.persistence.*;
-import java.util.List;
+import javax.persistence.Entity;
 
 @Entity
 @Data
@@ -11,6 +10,6 @@ public class Users extends BaseEntity {
 
     private String name;
     private String password;
-    @OneToMany(mappedBy="cart")
-    private List<Accounts> account;
+    private boolean isBlocked;
+    private int loginAttempts;
 }

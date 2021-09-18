@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 @Service
-public interface BaseService<E extends BaseEntity, D extends BaseDto>{
+public interface BaseService<D extends BaseDto>{
     D findById(Long id);
     ResponseEntity<?> create(D d);
     void deleteById(Long id);
