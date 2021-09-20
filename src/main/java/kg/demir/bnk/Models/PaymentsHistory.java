@@ -3,6 +3,7 @@ package kg.demir.bnk.Models;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -11,6 +12,6 @@ import java.time.LocalDateTime;
 public class PaymentsHistory extends BaseEntity{
     @ManyToOne
     private Accounts account;
-    private double amount;
+    private BigDecimal amount;
     private LocalDateTime date;
 }

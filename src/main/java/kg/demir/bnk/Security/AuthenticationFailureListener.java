@@ -1,5 +1,6 @@
-package kg.demir.bnk.Service.Impl;
+package kg.demir.bnk.Security;
 
+import kg.demir.bnk.Service.Impl.UsersServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,12 +14,15 @@ public class AuthenticationFailureListener implements ApplicationListener<Authen
 
     @Autowired
     private HttpServletRequest request;
+    @Autowired
+    private UsersServiceImpl usersService;
 
     private static Logger LOG = LoggerFactory.getLogger(AuthenticationFailureListener.class);
 
     @Override
     public void onApplicationEvent(AuthenticationFailureBadCredentialsEvent au) {
         String user = au.getAuthentication().getName();
-        LOG.info("********* user {} failed to login", user);
+        LOG.info("User {} failed to login", user);
+        usersService.failedToRegister(user);
     }
 }

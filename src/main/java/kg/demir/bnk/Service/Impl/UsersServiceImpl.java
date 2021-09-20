@@ -5,6 +5,7 @@ import kg.demir.bnk.Models.Dto.UsersDto;
 import kg.demir.bnk.Models.Mapper.UsersMapper;
 import kg.demir.bnk.Models.Users;
 import kg.demir.bnk.Repository.UsersRepo;
+import kg.demir.bnk.Security.SecurityConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,8 +13,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 public class UsersServiceImpl extends BaseServiceImpl<Users, UsersDto, UsersMapper, UsersRepo>{
@@ -29,10 +28,12 @@ public class UsersServiceImpl extends BaseServiceImpl<Users, UsersDto, UsersMapp
     private UsersMapper usersMapper;
     @Autowired
     private AppConfig appConfig;
+    @Autowired
+    private SecurityConfig securityConfig;
 
     @Override
     public ResponseEntity<?> create(UsersDto usersDto) {
-        BCryptPasswordEncoder encoder = appConfig.passwordEncoder();
+        BCryptPasswordEncoder encoder = securityConfig.passwordEncoder();
         String encodedPass = encoder.encode(usersDto.getPassword());
         System.out.println(encodedPass);
         usersDto.setPassword(encodedPass);
@@ -48,7 +49,7 @@ public class UsersServiceImpl extends BaseServiceImpl<Users, UsersDto, UsersMapp
         } else {
 
             if(!isBlocked(name)) {
-                BCryptPasswordEncoder encoder = appConfig.passwordEncoder();
+                BCryptPasswordEncoder encoder = securityConfig.passwordEncoder();
                 if (encoder.matches(password, usersDto.getPassword())) {
                     resetAttempts(name);
                     return ResponseEntity.ok("Welcome " + usersDto.getName());

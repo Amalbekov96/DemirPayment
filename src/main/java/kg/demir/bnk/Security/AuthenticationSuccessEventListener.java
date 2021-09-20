@@ -1,5 +1,6 @@
-package kg.demir.bnk.Service.Impl;
+package kg.demir.bnk.Security;
 
+import kg.demir.bnk.Service.Impl.UsersServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +16,15 @@ public class AuthenticationSuccessEventListener implements ApplicationListener<A
     @Autowired
     private HttpServletRequest request;
 
+    @Autowired
+    private UsersServiceImpl usersService;
 
     private static Logger LOG = LoggerFactory.getLogger(AuthenticationSuccessEventListener.class);
 
     @Override
     public void onApplicationEvent(final AuthenticationSuccessEvent au) {
         String user = au.getAuthentication().getName();
-        LOG.info("********* login successful for user {} ", user);
+        LOG.info("Login successful for user {} ", user);
+        usersService.resetAttempts(user);
     }
 }

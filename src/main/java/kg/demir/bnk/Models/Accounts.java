@@ -4,6 +4,7 @@ import kg.demir.bnk.Models.Enums.Currencies;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Currency;
 
 @Entity
@@ -11,7 +12,7 @@ import java.util.Currency;
 public class Accounts extends BaseEntity {
 
     private String accountNum;
-    private double amount;
+    private BigDecimal amount;
     private Currencies currency;
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
