@@ -22,7 +22,7 @@ public class AccountsController extends BaseController<Accounts, AccountsDto, Ac
        return accountsService.cash(account, amount);
     }
 
-    @PostMapping
+    @PostMapping("/deposit")
     ResponseEntity<?> deposit(@RequestParam("account") String account, @RequestParam("amount") String amount){
         return accountsService.deposit(account, amount);
     }

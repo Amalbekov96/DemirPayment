@@ -1,6 +1,10 @@
 package kg.demir.bnk.Models.Dto;
 
+import kg.demir.bnk.Models.Enums.UserRoles;
 import lombok.Data;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class UsersDto extends BaseDto{
@@ -8,11 +12,7 @@ public class UsersDto extends BaseDto{
     private String password;
     private boolean isBlocked;
     private int loginAttempts;
-
-    public UsersDto(String name, String password) {
-        this.name = name;
-        this.password = password;
-    }
+    private UserRoles roles;
 
     public UsersDto() {
     }

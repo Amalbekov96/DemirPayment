@@ -1,30 +1,48 @@
 package kg.demir.bnk.Security;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import javax.annotation.Resource;
-import javax.sql.DataSource;
+
+import java.util.concurrent.TimeUnit;
+
+import static kg.demir.bnk.Models.Enums.UserRoles.ADMIN;
+import static kg.demir.bnk.Models.Enums.UserRoles.CLIENT;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Resource
-    private UserDetailsService userDetailsService;
+    private UserServiceDetailsImpl userDetailsService;
 
-    @Autowired
-    private DataSource dataSource;
+    @Override
+    public void configure(WebSecurity web) throws Exception {
+
+        web.ignoring().antMatchers("/v2/api-docs",
+                "/configuration/ui",
+                "/swagger-resources/**",
+                "/configuration/security",
+                "/swagger-ui.html",
+                "/webjars/**");
+    }
+
+
+
+    @Override
+    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.authenticationProvider(authProvider());
+    }
 
     @Bean
     public DaoAuthenticationProvider authProvider() {
@@ -39,25 +57,36 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        System.out.println("configure");
-        http.csrf().disable()
+        http
                 .authorizeRequests()
                 .antMatchers("/").permitAll()
-                .antMatchers("/users/create").hasAuthority("ROLE_ADMIN") // (1)
-                .antMatchers("/users/pay").hasAnyAuthority("ROLE_USER") // (2)
-                .anyRequest().authenticated() // (3)
+                .antMatchers("/api/v1/accounts/create").hasRole(ADMIN.name())
+                .antMatchers("/api/v1/users/create").hasRole(ADMIN.name())
+                .antMatchers("/api/v1/accounts/cash").hasRole(CLIENT.name())
+                .antMatchers("/api/v1/accounts/deposit").hasRole(CLIENT.name())
+                .antMatchers("/api/v1/users/login").hasRole(CLIENT.name())
+                .anyRequest()
+                .authenticated()
                 .and()
-                .formLogin()
+                .httpBasic()
                 .and()
-                .httpBasic();
+//                .logout()
+//                .logoutUrl("/perform_logout")
+//                .invalidateHttpSession(true)
+//                .deleteCookies("JSESSIONID");
+                    .rememberMe()
+                    .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(21))
+                    .key("securecode")
+                    .rememberMeParameter("remember-me")
+                .and()
+                .logout()
+                    .logoutUrl("/logout")
+                    .clearAuthentication(true)
+                    .invalidateHttpSession(true)
+                    .deleteCookies("JSESSIONID", "remember-me")
+                    .logoutSuccessUrl("/login");
     }
-
-//    @Override
-//    public void configure(AuthenticationManagerBuilder auth) throws Exception {
-//        auth.jdbcAuthentication().dataSource(this.dataSource)
-//                .usersByUsernameQuery("SELECT * FROM users WHERE name=?");
-//
-//    }
 }

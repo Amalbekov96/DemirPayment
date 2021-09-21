@@ -49,6 +49,7 @@ public class UsersServiceImpl extends BaseServiceImpl<Users, UsersDto, UsersMapp
         } else {
 
             if(!isBlocked(name)) {
+
                 BCryptPasswordEncoder encoder = securityConfig.passwordEncoder();
                 if (encoder.matches(password, usersDto.getPassword())) {
                     resetAttempts(name);
