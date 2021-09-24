@@ -19,21 +19,17 @@ public class UserServiceDetailsImpl implements UserDetailsService {
     @Autowired
     private SecurityConfig securityConfig;
 
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
-
     @Override
     public UserDetails loadUserByUsername(String name) throws UsernameNotFoundException {
         final Users users = usersRepo.findByName(name);
 
-        System.out.println(bCryptPasswordEncoder.encode(users.getPassword()));
+        System.out.println(users.getRoles().name());
 
         if(users == null) {
             throw new UsernameNotFoundException("This user name is not found");
         }
-        System.out.println(users.getRoles() + "  authoritiessssss");
 
-        UserDetails user = User.withUsername(name).password(users.getPassword()).disabled(users.isBlocked()).authorities(users.getRoles().getGrantedAuthorities()).build();
+        UserDetails user = User.withUsername(name).password(users.getPassword()).disabled(users.isBlocked()).roles(users.getRoles().name()).build();
         return user;
     }
 }

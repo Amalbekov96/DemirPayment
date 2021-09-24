@@ -2,9 +2,11 @@ package kg.demir.bnk.Security;
 
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,6 +23,8 @@ import static kg.demir.bnk.Models.Enums.UserRoles.CLIENT;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+@ComponentScan("kg.demir.bnk")
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Resource
@@ -61,10 +65,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/").permitAll()
                 .antMatchers("/api/v1/accounts/create").hasRole(ADMIN.name())
-                .antMatchers("/api/v1/users/create").hasRole(ADMIN.name())
+                .antMatchers("/api/v1/users/findAll").hasRole(ADMIN.name())
                 .antMatchers("/api/v1/accounts/cash").hasRole(CLIENT.name())
                 .antMatchers("/api/v1/accounts/deposit").hasRole(CLIENT.name())
                 .antMatchers("/api/v1/users/login").hasRole(CLIENT.name())
@@ -73,20 +78,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .httpBasic()
                 .and()
-//                .logout()
-//                .logoutUrl("/perform_logout")
-//                .invalidateHttpSession(true)
-//                .deleteCookies("JSESSIONID");
-                    .rememberMe()
-                    .tokenValiditySeconds((int) TimeUnit.DAYS.toSeconds(21))
-                    .key("securecode")
-                    .rememberMeParameter("remember-me")
+                .formLogin()
+                .successForwardUrl("/users/findById/1")
                 .and()
                 .logout()
-                    .logoutUrl("/logout")
-                    .clearAuthentication(true)
-                    .invalidateHttpSession(true)
-                    .deleteCookies("JSESSIONID", "remember-me")
-                    .logoutSuccessUrl("/login");
+                .deleteCookies();
     }
 }

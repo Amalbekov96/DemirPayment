@@ -1,6 +1,5 @@
 package kg.demir.bnk.Controllers;
 
-import kg.demir.bnk.Configuration.AppConfig;
 import kg.demir.bnk.Models.Dto.UsersDto;
 import kg.demir.bnk.Models.Users;
 import kg.demir.bnk.Service.Impl.UsersServiceImpl;
@@ -21,8 +20,6 @@ public class UsersController extends BaseController<Users, UsersDto, UsersServic
     }
 
     @Autowired
-    private AppConfig appConfig;
-    @Autowired
     private UsersServiceImpl usersService;
 
     @Override
@@ -31,8 +28,8 @@ public class UsersController extends BaseController<Users, UsersDto, UsersServic
     }
 
 
-//    @GetMapping("/login")
-//    ResponseEntity<?> Login(@RequestParam("username") String username, @RequestParam("password") String psw, HttpServletRequest request) {
-//        return usersService.Login(username, psw, request);
-//    }
+    @GetMapping("/login")
+    ResponseEntity<?> Login(@RequestParam("username") String username, @RequestParam("password") String psw, HttpServletRequest request) {
+        return usersService.Login(username, psw, request);
+    }
 }

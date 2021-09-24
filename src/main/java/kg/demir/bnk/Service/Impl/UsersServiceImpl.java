@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,10 +31,10 @@ public class UsersServiceImpl extends BaseServiceImpl<Users, UsersDto, UsersMapp
     private AppConfig appConfig;
     @Autowired
     private SecurityConfig securityConfig;
-
     @Override
     public ResponseEntity<?> create(UsersDto usersDto) {
         BCryptPasswordEncoder encoder = securityConfig.passwordEncoder();
+        System.out.println(usersDto.getPassword());
         String encodedPass = encoder.encode(usersDto.getPassword());
         System.out.println(encodedPass);
         usersDto.setPassword(encodedPass);
@@ -47,10 +48,8 @@ public class UsersServiceImpl extends BaseServiceImpl<Users, UsersDto, UsersMapp
         if(usersDto == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User with name " + name + " is does not exist.");
         } else {
-
+            BCryptPasswordEncoder encoder = securityConfig.passwordEncoder();
             if(!isBlocked(name)) {
-
-                BCryptPasswordEncoder encoder = securityConfig.passwordEncoder();
                 if (encoder.matches(password, usersDto.getPassword())) {
                     resetAttempts(name);
                     return ResponseEntity.ok("Welcome " + usersDto.getName());
@@ -83,7 +82,8 @@ public class UsersServiceImpl extends BaseServiceImpl<Users, UsersDto, UsersMapp
         if (usersDto != null) {
             usersDto.setLoginAttempts(0);
             usersDto.setBlocked(false);
-            usersRepo.save(UsersMapper.INSTANCE.toEntity(usersDto));
+            usersDto.setRoles(usersDto.getRoles());
+//            usersRepo.save(UsersMapper.INSTANCE.toEntity(usersDto));
         }
     }
 
